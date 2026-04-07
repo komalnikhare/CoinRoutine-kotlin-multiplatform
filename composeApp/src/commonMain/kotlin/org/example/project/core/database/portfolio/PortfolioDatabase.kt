@@ -2,12 +2,17 @@ package org.example.project.core.database.portfolio
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.ConstructedBy
 import org.example.project.portfolio.data.local.PortfolioCoinEntity
 import org.example.project.portfolio.data.local.PortfolioDao
 import org.example.project.portfolio.data.local.UserBalanceDao
 import org.example.project.portfolio.data.local.UserBalanceEntity
 
-@Database(entities = [PortfolioCoinEntity::class, UserBalanceEntity::class], version = 2)
+@Database(
+    entities = [PortfolioCoinEntity::class, UserBalanceEntity::class], 
+    version = 2,
+    exportSchema = false
+)
 abstract class PortfolioDatabase: RoomDatabase() {
     abstract fun portfolioDao(): PortfolioDao
     abstract fun userBalanceDao(): UserBalanceDao
