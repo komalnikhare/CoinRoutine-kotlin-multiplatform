@@ -10,7 +10,6 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
-    alias(libs.plugins.room)
     alias(libs.plugins.ksp)
 }
 
@@ -106,12 +105,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 }
-room {
-    schemaDirectory("$projectDir/schemas")
-}
 
 dependencies {
-    //ksp(libs.room.compiler)
+    add("kspCommonMainMetadata", libs.room.compiler)
+    add("kspAndroid", libs.room.compiler)
     debugImplementation(compose.uiTooling)
 }
 
