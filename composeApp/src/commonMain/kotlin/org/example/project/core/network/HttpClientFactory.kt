@@ -32,7 +32,7 @@ object HttpClientFactory {
                 headers {
                     append(
                         "x-access-token",
-                        "" // TODO: Add actual token by creating API key from CoinRanking (https://coinranking.com/api)
+                        "coinranking6a1ed337b665421e724a4a1b142cf3fb813c22f44d853e2d"
                     )
                 }
                 contentType(ContentType.Application.Json)

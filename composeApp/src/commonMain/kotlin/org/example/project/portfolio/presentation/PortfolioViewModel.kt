@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.stateIn
 import org.example.project.core.domain.DataError
 import org.example.project.core.domain.Result
 import org.example.project.core.util.formatCoinUnit
-import org.example.project.core.util.formatFail
+import org.example.project.core.util.formatFiat
 import org.example.project.core.util.formatePercentage
 import org.example.project.core.util.toUiText
 import org.example.project.portfolio.domain.PortfolioCoinModel
@@ -59,14 +59,14 @@ class PortfolioViewModel(
         cashBalance: Double
     ): PortfolioState {
         val portfolioValue = when(totalBalanceResult) {
-            is Result.Success -> formatFail(totalBalanceResult.data)
-            is Result.Error -> formatFail(0.0)
+            is Result.Success -> formatFiat(totalBalanceResult.data)
+            is Result.Error -> formatFiat(0.0)
         }
 
         return currentState.copy(
             coins = portfolioCoins.map { it.toUiPortfolioCoinItem() },
             portfolioValue = portfolioValue,
-            cashBalance = formatFail(cashBalance),
+            cashBalance = formatFiat(cashBalance),
             showBuyButton = portfolioCoins.isNotEmpty(),
             isLoading = false,
         )
@@ -90,7 +90,7 @@ class PortfolioViewModel(
             name = coin.name,
             iconUrl = coin.iconUrl,
             amountInUnitText = formatCoinUnit(ownedAmountInUnit, coin.symbol),
-            amountInFiatText = formatFail(ownedAmountInFiat),
+            amountInFiatText = formatFiat(ownedAmountInFiat),
             performancePercentText = formatePercentage(performancePercent),
             isPositive = performancePercent >= 0
         )
