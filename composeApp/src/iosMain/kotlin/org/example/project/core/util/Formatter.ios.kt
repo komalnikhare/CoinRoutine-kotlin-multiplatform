@@ -4,7 +4,7 @@ import platform.Foundation.NSNumberFormatter
 import platform.Foundation.NSNumberFormatterDecimalStyle
 import platform.Foundation.NSNumber
 
-actual fun formatFail(amount: Double, showDecimal: Boolean): String {
+actual fun formatFiat(amount: Double, showDecimal: Boolean): String {
     val numberFormatter = NSNumberFormatter()
     numberFormatter.numberStyle = NSNumberFormatterDecimalStyle
 

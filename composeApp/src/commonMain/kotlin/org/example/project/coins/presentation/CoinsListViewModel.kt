@@ -12,7 +12,7 @@ import org.example.project.coins.domain.models.PriceModel
 import org.example.project.coins.domain.usecases.GetCoinPriceHistoryUseCase
 import org.example.project.coins.domain.usecases.GetCoinsListUseCase
 import org.example.project.core.domain.Result
-import org.example.project.core.util.formatFail
+import org.example.project.core.util.formatFiat
 import org.example.project.core.util.formatePercentage
 import org.example.project.core.util.logError
 import org.example.project.core.util.toUiText
@@ -44,7 +44,7 @@ class CoinsListViewModel(
                                 name = coinItem.coin.name,
                                 symbol = coinItem.coin.symbol,
                                 iconUrl = coinItem.coin.iconUrl,
-                                formattedPrice = formatFail(coinItem.price),
+                                formattedPrice = formatFiat(coinItem.price),
                                 formattedChange = formatePercentage(coinItem.change),
                                 isPositive = coinItem.change >= 0
 

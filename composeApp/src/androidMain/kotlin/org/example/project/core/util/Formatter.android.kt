@@ -2,7 +2,7 @@ package org.example.project.core.util
 
 import android.icu.text.DecimalFormat
 
-actual fun formatFail(amount: Double, showDecimal: Boolean): String{
+actual fun formatFiat(amount: Double, showDecimal: Boolean): String{
     val formatter = when{
         showDecimal.not() -> DecimalFormat("#,###")
         amount >= 1 -> DecimalFormat("#,###.00")
