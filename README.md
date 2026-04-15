@@ -27,6 +27,8 @@ CoinRoutine is a comprehensive cryptocurrency portfolio management application t
 - **User Balance Management**: Monitor and update cash balance with Room database storage
 - **Local Data Persistence**: Offline storage using Room database with SQLite
 - **Cross-Platform Data Sync**: Consistent data across Android and iOS platforms
+- **Real-time Portfolio Valuation**: Calculate current value based on live market prices
+- **Holdings Overview**: View detailed information about owned cryptocurrencies
 
 ### 🎨 User Interface
 - **Modern UI**: Clean, responsive interface built with Compose Multiplatform
@@ -34,6 +36,9 @@ CoinRoutine is a comprehensive cryptocurrency portfolio management application t
 - **Color Coding**: Green for profits, red for losses
 - **Loading States**: Proper loading indicators and error handling
 - **Responsive Design**: Adapts to different screen sizes and orientations
+- **Currency Formatting**: Automatic fiat currency formatting with proper decimal placement
+- **Input Validation**: Real-time validation for buy/sell amounts
+- **Visual Transformations**: Enhanced text input with currency symbols and formatting
 
 ### 🏗️ Architecture & Development
 - **Cross-Platform**: Single codebase targeting both Android and iOS
@@ -41,6 +46,7 @@ CoinRoutine is a comprehensive cryptocurrency portfolio management application t
 - **Clean Architecture**: Well-structured layers with clear separation of concerns
 - **Dependency Injection**: Koin for modular dependency management
 - **Local Database**: Room database with SQLite for offline data persistence
+- **Navigation**: Type-safe navigation with Compose Navigation and Kotlinx Serialization
 
 ### 🔄 Data Management
 - **Network Operations**: HTTP client for API calls with Ktor
@@ -48,18 +54,35 @@ CoinRoutine is a comprehensive cryptocurrency portfolio management application t
 - **Data Mapping**: Clean transformation between DTOs and domain models
 - **Error Handling**: Comprehensive error management and user feedback
 
+### 💰 Trading Features
+- **Buy Cryptocurrency**: Purchase coins using available cash balance
+- **Sell Cryptocurrency**: Sell owned coins and add proceeds to cash balance
+- **Real-time Price Integration**: Buy/sell at current market prices
+- **Transaction Validation**: Ensure sufficient funds and holdings
+- **Portfolio Updates**: Automatic portfolio updates after trades
+- **Currency Input**: Custom currency formatting for buy/sell amounts
+- **Trade History**: Track all buy/sell transactions locally
+
 ## 🏗️ Architecture
 
 The project follows Clean Architecture with clear separation of layers:
 
 ```
 ├── Presentation Layer
-│   ├── CoinsListScreen (UI)
-│   ├── CoinsListViewModel (MVVM)
-│   └── UI Components (PerformanceChart)
+│   ├── CoinsListScreen (Market Discovery)
+│   ├── PortfolioScreen (Portfolio Overview)
+│   ├── BuyScreen (Purchase Coins)
+│   ├── SellScreen (Sell Coins)
+│   ├── ViewModels (MVVM Pattern)
+│   └── UI Components (PerformanceChart, Currency Input)
 ├── Domain Layer
-│   ├── Use Cases (GetCoinsListUseCase, GetCoinPriceHistoryUseCase)
-│   ├── Models (CoinModel, PriceModel)
+│   ├── Use Cases
+│   │   ├── GetCoinsListUseCase
+│   │   ├── GetCoinPriceHistoryUseCase
+│   │   ├── GetCoinDetailsUseCase
+│   │   ├── BuyCoinUseCase
+│   │   └── SellCoinUseCase
+│   ├── Models (CoinModel, PriceModel, PortfolioCoinModel)
 │   └── Repository Interfaces
 ├── Data Layer
 │   ├── Remote Data Source (KtorCoinsRemoteDataSource)
@@ -67,12 +90,13 @@ The project follows Clean Architecture with clear separation of layers:
 │   ├── DAOs (PortfolioDao, UserBalanceDao)
 │   ├── Entities (PortfolioCoinEntity, UserBalanceEntity)
 │   ├── DTOs (Data Transfer Objects)
-│   └── Mappers
+│   └── Mappers (CoinItemMapper, PortfolioEntityMapper)
 └── Core Layer
     ├── Network (HttpClientFactory)
     ├── Database (PortfolioDatabaseFactory)
+    ├── Navigation (Type-safe Navigation)
     ├── Domain Models (Result, Error handling)
-    └── Utilities (Formatting, Logging)
+    └── Utilities (Formatting, Logging, Currency Transformations)
 ```
 
 ## 🛠️ Technology Stack
@@ -81,18 +105,20 @@ The project follows Clean Architecture with clear separation of layers:
 - **Kotlin Multiplatform**: Cross-platform development
 - **Compose Multiplatform 1.7.0**: Modern declarative UI framework
 - **Kotlin 2.0.21**: Programming language with Coroutines support
+- **Kotlinx DateTime 0.6.1**: Date and time utilities
 
 ### Architecture & DI
 - **Koin 4.0.0**: Dependency injection framework
 - **MVVM Pattern**: Model-View-ViewModel architecture
 - **Clean Architecture**: Separation of concerns
+- **KSP 2.0.21-1.0.25**: Kotlin Symbol Processing for annotation processing
 
 ### Networking & Data
 - **Ktor 3.0.0**: HTTP client for network operations
 - **Kotlinx Serialization 1.7.3**: JSON serialization/deserialization
-- **Room Database 2.7.0-alpha10**: Local SQLite database with KMP support
-- **SQLite Driver**: Bundled SQLite driver for cross-platform database access
-- **Coil 3.0.0**: Image loading library
+- **Room Database 2.7.0-alpha11**: Local SQLite database with KMP support
+- **SQLite 2.5.0-SNAPSHOT**: Bundled SQLite driver for cross-platform database access
+- **Coil 3.0.0**: Image loading library with SVG support
 
 ### UI & Graphics
 - **Material Design 3**: Modern design system
@@ -106,37 +132,48 @@ The project follows Clean Architecture with clear separation of layers:
 - **Compose UI Testing**: UI component testing
 
 ### Platform-Specific
-- **Android**: Target SDK 35, Min SDK 24
+- **Android**: Target SDK 35, Min SDK 24, AGP 8.5.2
 - **iOS**: Native iOS app with Compose Multiplatform
+- **Biometric Support**: Android Biometric API 1.4.0-alpha02
 
 ## 📦 Key Components
 
 ### Presentation Layer
-- **CoinsListScreen**: Main screen displaying cryptocurrency list
-- **CoinsListViewModel**: Manages UI state and business logic
-- **PerformanceChart**: Custom canvas-based chart component
-- **UiCoinListItem**: UI model for coin list items
+- **CoinsListScreen**: Market discovery screen displaying cryptocurrency list
+- **PortfolioScreen**: Portfolio overview showing holdings and cash balance
+- **BuyScreen**: Purchase interface for acquiring cryptocurrencies
+- **SellScreen**: Selling interface for owned cryptocurrencies
+- **ViewModels**: CoinsListViewModel, PortfolioViewModel, BuyViewModel, SellViewModel
+- **UI Components**: PerformanceChart, CurrencyVisualTransformation, TradeScreen
+- **UI Models**: UiCoinListItem, UiPortfolioCoinItem, UiTradeCoinItem
 
 ### Domain Layer
-- **GetCoinsListUseCase**: Fetches cryptocurrency list
-- **GetCoinPriceHistoryUseCase**: Retrieves price history for charts
+- **Use Cases**: 
+  - GetCoinsListUseCase, GetCoinPriceHistoryUseCase, GetCoinDetailsUseCase
+  - BuyCoinUseCase, SellCoinUseCase
+- **Models**: CoinModel, PriceModel, PortfolioCoinModel
+- **Repository**: PortfolioRepository interface
 - **Result<T>**: Generic wrapper for API responses
-- **CoinModel/PriceModel**: Domain models
 
 ### Data Layer
-- **KtorCoinsRemoteDataSource**: HTTP client implementation
-- **PortfolioDatabase**: Room database for local persistence
-- **PortfolioDao**: Data access object for portfolio coins
-- **UserBalanceDao**: Data access object for user cash balance
-- **PortfolioCoinEntity**: Entity for storing coin holdings
-- **UserBalanceEntity**: Entity for storing cash balance
-- **CoinItemMapper**: Maps DTOs to domain models
-- **DTOs**: Data transfer objects for API responses
+- **Remote Data Source**: KtorCoinsRemoteDataSource for API calls
+- **Repository Implementation**: PortfolioRepositoryImpl
+- **Database**: PortfolioDatabase (Room)
+- **DAOs**: PortfolioDao, UserBalanceDao
+- **Entities**: PortfolioCoinEntity, UserBalanceEntity
+- **Mappers**: CoinItemMapper, PortfolioEntityMapper, TradeCoinMapper
+- **DTOs**: CoinsResponseDto, CoinDetailsResponseDto, CoinPriceHistoryResponseDto
 
-### Database Layer
-- **PortfolioDatabaseFactory**: Factory for creating database instances
-- **PortfolioDatabaseCreator**: Platform-specific database constructor
-- **getPortfolioDatabaseBuilder**: Platform-specific database builder
+### Navigation
+- **Type-safe Navigation**: Compose Navigation with Kotlinx Serialization
+- **Routes**: Portfolio (start), Coins, Buy(coinId), Sell(coinId)
+- **Navigation Flow**: Portfolio ↔ Coins → Buy/Sell → Portfolio
+
+### Core Layer
+- **Network**: HttpClientFactory with Ktor configuration
+- **Database**: PortfolioDatabaseFactory and platform-specific builders
+- **Domain Models**: Result, Error, DataError handling
+- **Utilities**: Formatter, Logger, DataErrorToString, CurrencyOffsetMapping
 
 ## 🚀 Getting Started
 
@@ -164,30 +201,111 @@ CoinRoutine/
 ├── composeApp/
 │   └── src/
 │       ├── commonMain/kotlin/          # Shared code
-│       │   ├── portfolio/              # Portfolio feature module
-│       │   │   ├── data/local/         # Local database layer
-│       │   │   │   ├── PortfolioDao.kt
-│       │   │   │   ├── UserBalanceDao.kt
-│       │   │   │   ├── PortfolioCoinEntity.kt
-│       │   │   │   └── UserBalanceEntity.kt
-│       │   │   ├── data/              # Data layer
-│       │   │   ├── domain/            # Domain layer
-│       │   │   └── presentation/      # UI layer
-│       │   ├── core/                  # Core utilities
-│       │   │   └── database/          # Database configuration
-│       │   │       └── portfolio/     # Portfolio database
-│       │   │           ├── PortfolioDatabase.kt
-│       │   │           └── PortfolioDatabaseFactory.kt
-│       │   ├── di/                    # Dependency injection
-│       │   └── theme/                 # UI theme
-│       ├── androidMain/kotlin/         # Android-specific
+│       │   └── org/example/project/
+│       │       ├── App.kt              # Main app entry point
+│       │       ├── coins/              # Cryptocurrency market module
+│       │       │   ├── data/
+│       │       │   │   ├── remote/     # API integration
+│       │       │   │   │   ├── dto/    # Data transfer objects
+│       │       │   │   │   └── imp/    # Ktor implementation
+│       │       │   │   └── mapper/    # Data mapping
+│       │       │   ├── domain/
+│       │       │   │   ├── api/       # Repository interfaces
+│       │       │   │   ├── models/    # Domain models
+│       │       │   │   └── usecases/  # Business logic
+│       │       │   └── presentation/
+│       │       │       ├── components/ # UI components
+│       │       │       ├── CoinsListScreen.kt
+│       │       │       ├── CoinsListViewModel.kt
+│       │       │       └── CoinsState.kt
+│       │       ├── portfolio/          # Portfolio management module
+│       │       │   ├── data/
+│       │       │   │   ├── local/     # Local database
+│       │       │   │   │   ├── PortfolioDao.kt
+│       │       │   │   │   ├── UserBalanceDao.kt
+│       │       │   │   │   ├── PortfolioCoinEntity.kt
+│       │       │   │   │   └── UserBalanceEntity.kt
+│       │       │   │   ├── mapper/    # Data mapping
+│       │       │   │   └── PortfolioRepositoryImpl.kt
+│       │       │   ├── domain/
+│       │       │   │   ├── PortfolioRepository.kt
+│       │       │   │   └── PortfolioCoinModel.kt
+│       │       │   └── presentation/
+│       │       │       ├── PortfolioScreen.kt
+│       │       │       ├── PortfolioViewModel.kt
+│       │       │       └── PortfolioState.kt
+│       │       ├── trade/               # Trading functionality module
+│       │       │   ├── domain/
+│       │       │   │   ├── BuyCoinUseCase.kt
+│       │       │   │   └── SellCoinUseCase.kt
+│       │       │   └── presentation/
+│       │       │       ├── buy/       # Buy screen
+│       │       │       ├── sell/      # Sell screen
+│       │       │       ├── common/    # Shared trade components
+│       │       │       │   ├── TradeScreen.kt
+│       │       │       │   ├── component/ # Currency formatting
+│       │       │       │   └── mapper/   # Trade data mapping
+│       │       ├── core/               # Core utilities and shared code
+│       │       │   ├── database/
+│       │       │   │   └── portfolio/  # Database configuration
+│       │       │   ├── domain/        # Core domain models
+│       │       │   ├── network/       # HTTP client setup
+│       │       │   ├── navigation/    # Type-safe navigation
+│       │       │   └── util/          # Utilities and helpers
+│       │       ├── di/                 # Dependency injection
+│       │       │   └── Module.kt       # Koin DI configuration
+│       │       └── theme/              # UI theme and styling
+│       ├── androidMain/kotlin/         # Android-specific code
 │       │   └── core/database/         # Android database builder
-│       └── iosMain/kotlin/            # iOS-specific
-│           └── core/database/         # iOS database builder
+│       ├── iosMain/kotlin/            # iOS-specific code
+│       │   └── core/database/         # iOS database builder
+│       └── commonTest/kotlin/         # Shared tests
 ├── iosApp/                             # iOS app entry point
-├── gradle/                             # Gradle configuration
-└── build.gradle.kts                    # Root build configuration
+│   ├── iosApp/                        # iOS SwiftUI wrapper
+│   └── iosApp.xcodeproj/              # Xcode project
+├── gradle/                            # Gradle configuration
+│   └── libs.versions.toml             # Version catalog
+├── build.gradle.kts                   # Root build configuration
+└── settings.gradle.kts                # Gradle settings
 ```
+
+## 🧭 Navigation & App Flow
+
+The app uses type-safe navigation with Compose Navigation and Kotlinx Serialization for a robust, compile-time safe navigation system.
+
+### Navigation Routes
+- **Portfolio** (Start Destination): Main portfolio overview
+- **Coins**: Market discovery screen
+- **Buy(coinId)**: Purchase screen for specific coin
+- **Sell(coinId)**: Selling screen for owned coin
+
+### User Journey
+1. **Portfolio Screen** (Start)
+   - View current cryptocurrency holdings
+   - Check cash balance
+   - Click on owned coin → Navigate to Sell
+   - Click "Discover Coins" → Navigate to Coins
+
+2. **Coins Screen** (Market Discovery)
+   - Browse available cryptocurrencies
+   - View real-time prices and charts
+   - Click on coin → Navigate to Buy
+
+3. **Buy Screen** (Purchase)
+   - Select amount to purchase
+   - Validate sufficient cash balance
+   - Complete purchase → Navigate back to Portfolio
+
+4. **Sell Screen** (Selling)
+   - Select amount to sell
+   - Validate sufficient holdings
+   - Complete sale → Navigate back to Portfolio
+
+### Navigation Features
+- **Type-safe Routes**: Compile-time safety for navigation parameters
+- **Nested Navigation**: Clean separation between feature modules
+- **State Restoration**: Proper navigation state management
+- **Deep Linking**: Support for direct navigation to specific screens
 
 ## 🔧 Configuration
 
@@ -205,10 +323,13 @@ The project uses Version Catalogs for dependency management. All dependencies ar
 ## 🎨 UI Features & User Experience
 
 ### Core Interface
-- **Coin List Screen**: Main screen displaying top cryptocurrencies with real-time data
-- **Portfolio Dashboard**: Comprehensive view of user's cryptocurrency holdings and cash balance
+- **Portfolio Screen**: Main screen displaying cryptocurrency holdings and cash balance
+- **Coin List Screen**: Market discovery screen with real-time cryptocurrency data
+- **Buy Screen**: Purchase interface with currency formatting and validation
+- **Sell Screen**: Selling interface with holdings management
 - **Interactive Charts**: Custom canvas-based 24-hour price history visualization
 - **Responsive Layout**: Optimized for both phones and tablets
+- **Biometric Support**: Android Biometric API integration for secure access
 
 ### Visual Design
 - **Material Design 3**: Modern design system with consistent theming
@@ -246,24 +367,55 @@ The project uses Version Catalogs for dependency management. All dependencies ar
 
 ## 🔄 Data Flow
 
+### Market Data Flow
 1. **CoinsListViewModel** requests data via use cases
 2. **Use cases** interact with repository interfaces
 3. **KtorCoinsRemoteDataSource** makes HTTP requests to crypto API
-4. **PortfolioDatabase** handles local data persistence via Room
-5. **Data is mapped** from DTOs to domain models
-6. **UI state updates** flow back to the Compose UI
-7. **User interactions** trigger view model actions
-8. **Local database** stores portfolio holdings and cash balance
+4. **Data is mapped** from DTOs to domain models via CoinItemMapper
+5. **UI state updates** flow back to the Compose UI
+
+### Portfolio Data Flow
+1. **PortfolioViewModel** requests portfolio data
+2. **PortfolioRepository** queries local Room database
+3. **PortfolioDao/UserBalanceDao** execute database operations
+4. **Data is mapped** from entities to domain models
+5. **Portfolio state** updates in the UI
+
+### Trading Data Flow
+1. **BuyViewModel/SellViewModel** handle trade requests
+2. **BuyCoinUseCase/SellCoinUseCase** validate and process trades
+3. **PortfolioRepository** updates local database
+4. **PortfolioDao/UserBalanceDao** execute transactions
+5. **Portfolio state** refreshes with updated holdings
+6. **Navigation** returns user to portfolio screen
+
+### Complete User Interaction Flow
+1. **User interactions** trigger view model actions
+2. **View models** coordinate use cases for business logic
+3. **Use cases** interact with repositories for data operations
+4. **Repositories** handle both remote (API) and local (database) data
+5. **Local database** stores portfolio holdings and cash balance
+6. **Remote API** provides real-time market data
+7. **UI state** updates reactively across all screens
+8. **Navigation** provides seamless screen transitions
 
 ## 🧪 Testing
 
-The project includes comprehensive testing setup:
+The project includes a comprehensive testing framework:
 - **Unit Tests**: Test business logic, use cases, and data transformations
-- **Flow Testing**: Turbine library for testing Kotlin Flow operations
+- **Flow Testing**: Turbine 0.7.0 library for testing Kotlin Flow operations
 - **UI Testing**: Compose UI testing for component verification
 - **Database Testing**: Room database testing with in-memory SQLite
+- **Assertion Library**: AssertK 0.25 for fluent assertions
+- **Coroutines Testing**: Kotlinx Coroutines Test 1.9.0 for async testing
 - **Mock Implementations**: Test doubles for external dependencies
 - **Integration Tests**: End-to-end testing of critical user flows
+
+### Test Structure
+- **commonTest**: Shared tests for all platforms
+- **Test Dependencies**: Configured in libs.versions.toml
+- **Test Utilities**: Helper functions and test doubles
+- **CI/CD Ready**: Test configurations for continuous integration
 
 ## 🛠️ Development & Contribution
 
@@ -296,12 +448,19 @@ The project includes comprehensive testing setup:
 
 - [x] Portfolio tracking and management
 - [x] User balance tracking with local persistence
+- [x] Buy/sell cryptocurrency functionality
+- [x] Real-time price charts and market data
+- [x] Type-safe navigation system
+- [x] Currency formatting and input validation
+- [x] Cross-platform database with Room
 - [ ] Price alerts and notifications
-- [ ] Advanced charting features
-- [ ] User authentication
-- [ ] Portfolio performance analytics
-- [ ] Transaction history tracking
-- [ ] Additional cryptocurrency exchanges
+- [ ] Advanced charting features (technical indicators)
+- [ ] User authentication and biometric security
+- [ ] Portfolio performance analytics and reporting
+- [ ] Transaction history tracking and export
+- [ ] Additional cryptocurrency exchanges integration
+- [ ] Portfolio synchronization across devices
+- [ ] Advanced order types (limit, stop-loss)
 
 ## 📄 License
 
