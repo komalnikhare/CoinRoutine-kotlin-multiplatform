@@ -70,6 +70,14 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.ktor.ios)
             implementation(libs.kotlin.test)
+
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.kotlin.test)
+            implementation(libs.test.turbine)
+            implementation(libs.test.assertk)
+
+            @OptIn(ExperimentalComposeLibrary::class)
+            implementation(compose.uiTest)
         }
 
         iosMain.dependencies {
